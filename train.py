@@ -84,12 +84,16 @@ config = {k: globals()[k] for k in config_keys} # will be useful for logging
 # ddp = int(os.environ.get('RANK', -1)) != -1 # is this a ddp run?
 ddp = True
 if ddp:
-    init_process_group(backend=backend)
     ddp_rank = idr_torch.rank
     ddp_local_rank = idr_torch.local_rank
     ddp_world_size = idr_torch.size
+    init_process_group(backend=backend,
+                       init_method="env://",
+                       rank=ddp_rank,
+                       world_size=ddp_world_size,
+                       )
     device = f'cuda:{ddp_local_rank}'
-    torch.cuda.set_device(device)
+    torch.cuda.set_device(ddp_local_rank)
     master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
     seed_offset = ddp_rank # each process gets a different seed
     # world_size number of processes will be training simultaneously, so we can scale

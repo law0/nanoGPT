@@ -9,7 +9,6 @@
 #SBATCH --cpus-per-task=24 # 24 * 4tasks = 96 CPUs (all CPUs of a node)
 #SBATCH --time=20:00:00 # temps maximal d’allocation "(HH:MM:SS)"
 #SBATCH --hint=nomultithread # desactiver l’hyperthreading
-#SBATCH --account=ujo99ld@h100 # comptabilite h100
 #SBATCH --qos=qos_gpu_h100-t3
 
 module purge # nettoyer les modules herites par defaut
