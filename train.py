@@ -42,9 +42,9 @@ eval_only = False # if True, script exits right after the first eval
 always_save_checkpoint = True # if True, always save a checkpoint after each eval
 init_from = 'scratch' # 'scratch' or 'resume' or 'gpt2*'
 # wandb logging
-wandb_log = False # disabled by default
-wandb_project = 'owt'
-wandb_run_name = 'gpt2' # 'run' + str(time.time())
+# wandb_log = False # disabled by default
+# wandb_project = 'owt'
+# wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'
 gradient_accumulation_steps = 5 * 8 # used to simulate larger batch sizes
@@ -249,9 +249,9 @@ def get_lr(it):
     return min_lr + coeff * (learning_rate - min_lr)
 
 # logging
-if wandb_log and master_process:
-    import wandb
-    wandb.init(project=wandb_project, name=wandb_run_name, config=config)
+# if wandb_log and master_process:
+#     import wandb
+#     wandb.init(project=wandb_project, name=wandb_run_name, config=config)
 
 # training loop
 X, Y = get_batch('train') # fetch the very first batch
@@ -270,14 +270,14 @@ while True:
     if iter_num % eval_interval == 0 and master_process:
         losses = estimate_loss()
         print(f"step {iter_num}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
-        if wandb_log:
-            wandb.log({
-                "iter": iter_num,
-                "train/loss": losses['train'],
-                "val/loss": losses['val'],
-                "lr": lr,
-                "mfu": running_mfu*100, # convert to percentage
-            })
+#        if wandb_log:
+#            wandb.log({
+#                "iter": iter_num,
+#                "train/loss": losses['train'],
+#                "val/loss": losses['val'],
+#                "lr": lr,
+#                "mfu": running_mfu*100, # convert to percentage
+#            })
         if losses['val'] < best_val_loss or always_save_checkpoint:
             best_val_loss = losses['val']
             if iter_num > 0:
@@ -289,7 +289,7 @@ while True:
                     'best_val_loss': best_val_loss,
                     'config': config,
                 }
-                print(f"saving checkpoint to {out_dir}")
+                print(f"saving checkpoint to {out_dir}, {best_val_loss=}")
                 torch.save(checkpoint, os.path.join(out_dir, 'ckpt.pt'))
     if iter_num == 0 and eval_only:
         break
